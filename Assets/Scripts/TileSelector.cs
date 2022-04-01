@@ -38,11 +38,11 @@ public class TileSelector : MonoBehaviour
             if (Input.GetMouseButtonDown(0))
             {
                 GameObject selectedPiece = hit.collider.gameObject;
-                Debug.Log(selectedPiece);
+                //Debug.Log(selectedPiece);
                 if (selectedPiece.tag == "Piece" && !(GameController.instance.DoesPieceInBoard(selectedPiece)))
                 {
                     GameController.instance.SelectPiece(selectedPiece);
-                    Debug.Log("selected");
+                    //Debug.Log("selected");
                     // Reference Point 1: add ExitState call here later
                     ExitState(selectedPiece);
                 }
