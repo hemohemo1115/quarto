@@ -32,18 +32,20 @@ public class MoveSelector : MonoBehaviour
             Vector3 position = hit.collider.gameObject.transform.position;
             //Vector2 gridPoint = Geometry.GridFromPoint(position);
             //Debug.Log(position);
+            //スペースを光らせるために分岐
             if(GameController.instance.DoesGameObjectBelongBoard(hit.collider.gameObject))
             {
                 tileHighlight.SetActive(true);
                 tileHighlight.transform.position = position + new Vector3(0, 0.1f, 0);
             }
+            //移動先を選択
             if (Input.GetMouseButtonDown(0))
             {
                 GameObject selectedSpace = hit.collider.gameObject;
                 Debug.Log(selectedSpace);
                 if(GameController.instance.DoesGameObjectBelongBoard(selectedSpace) && !(GameController.instance.DoesPieceInBoard(movingPiece)))
                 {
-                    GameController.instance.Move(movingPiece, position);
+                    GameController.instance.Move(movingPiece, selectedSpace);
                 }
                 ExitState();
             }
