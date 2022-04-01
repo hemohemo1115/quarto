@@ -42,10 +42,11 @@ public class MoveSelector : MonoBehaviour
             if (Input.GetMouseButtonDown(0))
             {
                 GameObject selectedSpace = hit.collider.gameObject;
-                Debug.Log(selectedSpace);
+                //Debug.Log(selectedSpace);
                 if(GameController.instance.DoesGameObjectBelongBoard(selectedSpace) && !(GameController.instance.DoesPieceInBoard(movingPiece)))
                 {
                     GameController.instance.Move(movingPiece, selectedSpace);
+                    Debug.Log("Quarto判定" + GameController.instance.DoesQuarto());
                 }
                 ExitState();
             }

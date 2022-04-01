@@ -10,7 +10,7 @@ public class GameController : MonoBehaviour
     private GameObject[,] field = new GameObject[4, 4];
     public Board board;
     public GameObject[] boardChildren;
-    private string[] check = new string[4];
+    public GameObject empty;
 
     //各駒の数字を定義
     private const int EMPTY = 0;
@@ -75,61 +75,37 @@ public class GameController : MonoBehaviour
         camera_object = GameObject.Find("Main Camera").GetComponent<Camera>();
 
         //フィールド初期化
-        //InitializeField();
+        InitializeField();
 
         //Boardの子供を取得
         int childrenLength = board.transform.childCount;
         boardChildren = new GameObject[childrenLength];
         Debug.Log(childrenLength);
-        // 0～個数-1までの子を順番に配列に格納
+        //ボードの子を順番に配列に格納
         for (var i = 0; i < childrenLength; ++i)
         {
             boardChildren[i] = board.transform.GetChild(i).gameObject;
         }
         Debug.Log(boardChildren);
 
-        DebugField();
+        //DebugField();
     }
 
     // Update is called once per frame
     void Update()
-    {/*
-        if (Input.GetMouseButtonDown(0))
+    {
+
+    }
+
+    private void InitializeField()
+    {
+        for (int i = 0; i < 4;i++)
         {
-            //マウスのポジションを取得してRayに代入
-            Ray ray = camera_object.ScreenPointToRay(Input.mousePosition);
- 
-            //マウスのポジションからRayを投げて何かに当たったらhitに入れる
-            if (Physics.Raycast(ray, out hit))
+            for (int j = 0; j < 4;j++)
             {
-                //x,zの値を取得
-                float x = (int)hit.collider.gameObject.transform.position.x;
-                float z = (int)hit.collider.gameObject.transform.position.z;
-                //Debug.Log(x);
-                //Debug.Log(z);
-
-                if (hit.collider.gameObject.tag == "Piece")
-                {
-                    Piece = hit.collider.gameObject;
-                }
-                else 
-                {
-                    if (Piece != null)
-                    {
-                        Vector3 pos = hit.collider.gameObject.transform.position;
-                        Debug.Log(Piece.transform.localScale);
-                        pos.y += Piece.transform.localScale.y/2;
-                        Piece.transform.position = pos;
-                        Piece = null;
-                    }
-                }
-
-
-                //GameObject space = Instantiate(OrcherBigCube);
-                //space.transform.position = hit.collider.gameObject.transform.position;
+                field[i, j] = empty;
             }
-
-        }*/
+        }
     }
 
     private void DebugField()
@@ -237,67 +213,51 @@ public class GameController : MonoBehaviour
         {
             case "Space":
                 field[0,0] = piece;
-                Debug.Log(field[0,0]);
                 break;
             case "Space1":
                 field[0,1] = piece;
-                Debug.Log(field[0,1]);
                 break;
             case "Space2":
                 field[0,2] = piece;
-                Debug.Log(field[0,2]);
                 break;
             case "Space3":
                 field[0,3] = piece;
-                Debug.Log(field[0,3]);
                 break;
             case "Space4":
                 field[1,0] = piece;
-                Debug.Log(field[1,0]);
                 break;
             case "Space5":
                 field[1,1] = piece;
-                Debug.Log(field[1,1]);
                 break;
             case "Space6":
                 field[1,2] = piece;
-                Debug.Log(field[1,2]);
                 break;
             case "Space7":
                 field[1,3] = piece;
-                Debug.Log(field[1,3]);
                 break;
             case "Space8":
                 field[2,0] = piece;
-                Debug.Log(field[2,0]);
                 break;
             case "Space9":
                 field[2,1] = piece;
-                Debug.Log(field[2,1]);
                 break;
             case "Space10":
                 field[2,2] = piece;
-                Debug.Log(field[2,2]);
                 break;
             case "Space11":
                 field[2,3] = piece;
-                Debug.Log(field[2,3]);
                 break;
             case "Space12":
                 field[3,0] = piece;
-                Debug.Log(field[3,0]);
                 break;
             case "Space13":
                 field[3,1] = piece;
-                Debug.Log(field[3,1]);
                 break;
             case "Space14":
                 field[3,2] = piece;
-                Debug.Log(field[3,2]);
                 break;
             case "Space15":
                 field[3,3] = piece;
-                Debug.Log(field[3,3]);
                 break;
             default:
                 Debug.Log("Record Piece error");
@@ -305,12 +265,19 @@ public class GameController : MonoBehaviour
         }
     }
 
-    public bool DoesPieceLineCube(GameObject field)
+    public bool DoesQuarto()
     {
         //行チェック
         for(int i = 0;i < 4;i++)
         {
-            if(DoesPieceCube(field[i,0]) && DoesPieceCube(field[i,1]) && DoesPieceCube(field[i,2]) && DoesPieceCube(field[i,3]))
+            if((DoesPieceCube(field[i,0]) && DoesPieceCube(field[i,1]) && DoesPieceCube(field[i,2]) && DoesPieceCube(field[i,3])) || 
+            (DoesPieceCylinder(field[i,0]) && DoesPieceCylinder(field[i,1]) && DoesPieceCylinder(field[i,2]) && DoesPieceCylinder(field[i,3])) || 
+            (DoesPieceBig(field[i,0]) && DoesPieceBig(field[i,1]) && DoesPieceBig(field[i,2]) && DoesPieceBig(field[i,3])) || 
+            (DoesPieceSmall(field[i,0]) && DoesPieceSmall(field[i,1]) && DoesPieceSmall(field[i,2]) && DoesPieceSmall(field[i,3])) || 
+            (DoesPieceOcher(field[i,0]) && DoesPieceOcher(field[i,1]) && DoesPieceOcher(field[i,2]) && DoesPieceOcher(field[i,3])) || 
+            (DoesPieceBrown(field[i,0]) && DoesPieceBrown(field[i,1]) && DoesPieceBrown(field[i,2]) && DoesPieceBrown(field[i,3])) || 
+            (DoesPieceHole(field[i,0]) && DoesPieceHole(field[i,1]) && DoesPieceHole(field[i,2]) && DoesPieceHole(field[i,3])) || 
+            (DoesPiecePlane(field[i,0]) && DoesPiecePlane(field[i,1]) && DoesPiecePlane(field[i,2]) && DoesPiecePlane(field[i,3])))
             {
                 return true;
             }
@@ -318,48 +285,42 @@ public class GameController : MonoBehaviour
         //列チェック
         for(int i = 0;i < 4;i++)
         {
-            if(DoesPieceCube(field[0,i]) && DoesPieceCube(field[1,i]) && DoesPieceCube(field[2,i]) && DoesPieceCube(field[3,i]))
+            if((DoesPieceCube(field[0,i]) && DoesPieceCube(field[1,i]) && DoesPieceCube(field[2,i]) && DoesPieceCube(field[3,i])) || 
+            (DoesPieceCylinder(field[0,i]) && DoesPieceCylinder(field[1,i]) && DoesPieceCylinder(field[2,i]) && DoesPieceCylinder(field[3,i])) || 
+            (DoesPieceBig(field[0,i]) && DoesPieceBig(field[1,i]) && DoesPieceBig(field[2,i]) && DoesPieceBig(field[3,i])) || 
+            (DoesPieceSmall(field[0,i]) && DoesPieceSmall(field[1,i]) && DoesPieceSmall(field[2,i]) && DoesPieceSmall(field[3,i])) || 
+            (DoesPieceOcher(field[0,i]) && DoesPieceOcher(field[1,i]) && DoesPieceOcher(field[2,i]) && DoesPieceOcher(field[3,i])) || 
+            (DoesPieceBrown(field[0,i]) && DoesPieceBrown(field[1,i]) && DoesPieceBrown(field[2,i]) && DoesPieceBrown(field[3,i])) || 
+            (DoesPieceHole(field[0,i]) && DoesPieceHole(field[1,i]) && DoesPieceHole(field[2,i]) && DoesPieceHole(field[3,i])) || 
+            (DoesPiecePlane(field[0,i]) && DoesPiecePlane(field[1,i]) && DoesPiecePlane(field[2,i]) && DoesPiecePlane(field[3,i])))
             {
                 return true;
             }
         }
         //斜めチェック1
-        if(DoesPieceCube(field[0,0]) && DoesPieceCube(field[1,1]) && DoesPieceCube(field[2,2]) && DoesPieceCube(field[3,3]))
+        if((DoesPieceCube(field[0,0]) && DoesPieceCube(field[1,1]) && DoesPieceCube(field[2,2]) && DoesPieceCube(field[3,3])) || 
+        (DoesPieceCylinder(field[0,0]) && DoesPieceCylinder(field[1,1]) && DoesPieceCylinder(field[2,2]) && DoesPieceCylinder(field[3,3])) || 
+        (DoesPieceBig(field[0,0]) && DoesPieceBig(field[1,1]) && DoesPieceBig(field[2,2]) && DoesPieceBig(field[3,3])) || 
+        (DoesPieceSmall(field[0,0]) && DoesPieceSmall(field[1,1]) && DoesPieceSmall(field[2,2]) && DoesPieceSmall(field[3,3])) || 
+        (DoesPieceOcher(field[0,0]) && DoesPieceOcher(field[1,1]) && DoesPieceOcher(field[2,2]) && DoesPieceOcher(field[3,3])) || 
+        (DoesPieceBrown(field[0,0]) && DoesPieceBrown(field[1,1]) && DoesPieceBrown(field[2,2]) && DoesPieceBrown(field[3,3])) || 
+        (DoesPieceHole(field[0,0]) && DoesPieceHole(field[1,1]) && DoesPieceHole(field[2,2]) && DoesPieceHole(field[3,3])) || 
+        (DoesPiecePlane(field[0,0]) && DoesPiecePlane(field[1,1]) && DoesPiecePlane(field[2,2]) && DoesPiecePlane(field[3,3])))
         {
             return true;
         }
         //斜めチェック2
-        if(DoesPieceCube(field[0,3]) && DoesPieceCube(field[1,2]) && DoesPieceCube(field[2,1]) && DoesPieceCube(field[3,0]))
+        if((DoesPieceCube(field[0,3]) && DoesPieceCube(field[1,2]) && DoesPieceCube(field[2,1]) && DoesPieceCube(field[3,0])) || 
+        (DoesPieceCylinder(field[0,3]) && DoesPieceCylinder(field[1,2]) && DoesPieceCylinder(field[2,1]) && DoesPieceCylinder(field[3,0])) || 
+        (DoesPieceBig(field[0,3]) && DoesPieceBig(field[1,2]) && DoesPieceBig(field[2,1]) && DoesPieceBig(field[3,0])) || 
+        (DoesPieceSmall(field[0,3]) && DoesPieceSmall(field[1,2]) && DoesPieceSmall(field[2,1]) && DoesPieceSmall(field[3,0])) || 
+        (DoesPieceOcher(field[0,3]) && DoesPieceOcher(field[1,2]) && DoesPieceOcher(field[2,1]) && DoesPieceOcher(field[3,0])) || 
+        (DoesPieceBrown(field[0,3]) && DoesPieceBrown(field[1,2]) && DoesPieceBrown(field[2,1]) && DoesPieceBrown(field[3,0])) || 
+        (DoesPieceHole(field[0,3]) && DoesPieceHole(field[1,2]) && DoesPieceHole(field[2,1]) && DoesPieceHole(field[3,0])) || 
+        (DoesPiecePlane(field[0,3]) && DoesPiecePlane(field[1,2]) && DoesPiecePlane(field[2,1]) && DoesPiecePlane(field[3,0])))
         {
             return true;
         }
         return false;
-    }
-
-    public bool DoesQuarto(GameObject field)
-    {
-        for(int i = 0; i < 4;i++)
-        {
-            if(DoesPieceCube(field[i,0]) &&
-                
-                
-            DoesPieceCylinder(field[i,j]) || DoesPieceBig(field[i,j]) || DoesPieceSmall(field[i,j]) || 
-            DoesPieceOcher(field[i,j]) || DoesPieceBrown(field[i,j]) || DoesPieceHole(field[i,j]) || DoesPiecePlane(field[i,j]))
-            {
-                return true;
-            }
-        }
-        for(i = 0;j < 4;i++)
-        {
-
-        }
-        for(i = 0;i < 0;i++)
-        {
-            if(DoesPieceCube(field[i,j]) || DoesPieceCylinder(field[i,j]) || DoesPieceBig(field[i,j]) || DoesPieceSmall(field[i,j]) || 
-                DoesPieceOcher(field[i,j]) || DoesPieceBrown(field[i,j]) || DoesPieceHole(field[i,j]) || DoesPiecePlane(field[i,j]))
-                {
-                    return true;
-                }
-        }
     }
 }
