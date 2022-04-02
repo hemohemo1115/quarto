@@ -44,6 +44,7 @@ public class TileSelector : MonoBehaviour
                     GameController.instance.SelectPiece(selectedPiece);
                     //Debug.Log("selected");
                     // Reference Point 1: add ExitState call here later
+                    GameController.instance.NextPlayer();
                     ExitState(selectedPiece);
                 }
             }

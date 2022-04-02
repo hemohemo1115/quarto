@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
@@ -12,33 +14,6 @@ public class GameController : MonoBehaviour
     public GameObject[] boardChildren;
     public GameObject empty;
 
-    //各駒の数字を定義
-    private const int EMPTY = 0;
-    private const int BROWN = 2;
-    private const int ORCHER = 3;
-    private const int BIG = 5;
-    private const int SMOLE = 7;
-    private const int DENT = 11;
-    private const int NODENT = 13;
-    private const int CUBE = 17;
-    private const int CYLINDER = 19;
-    //private const int BrownBigDentCube = BROWN * BIG * DENT * CUBE;
-    //private const int BrownBigDentCylinder = BROWN * BIG * DENT * CYLINDER;
-    //private const int BrownBigCube = BROWN * BIG * NODENT * CUBE;
-    //private const int BrownBigCylinder = BROWN * BIG * NODENT * CYLINDER;
-    //private const int BrownSmoleDentCube = BROWN * SMOLE * DENT * CUBE;
-    //private const int BrownSmoleDentCylinder = BROWN * SMOLE * DENT * CYLINDER;
-    /*private const int BrownSmoleCube = BROWN * SMOLE * NODENT * CUBE;
-    private const int BrownSmoleCylinder = BROWN * SMOLE * NODENT * CYLINDER;
-    private const int OrcherBigDentCube = ORCHER * BIG * DENT * CUBE;
-    private const int OrcherBigDentCylinder = ORCHER * BIG * DENT * CYLINDER;
-    private const int OrcherBigCube = ORCHER * BIG * NODENT * CUBE;
-    private const int OrcherBigCylinder = ORCHER * BIG * NODENT * CYLINDER;
-    private const int OrcherSmoleDentCube = ORCHER * SMOLE * DENT * CUBE;
-    private const int OrcherSmoleDentCylinder = ORCHER * SMOLE * DENT * CYLINDER;
-    private const int OrcherSmoleCylinder = ORCHER * SMOLE * NODENT * CYLINDER;
-    private const int OrcherSmoleCube = ORCHER * SMOLE * NODENT * CYLINDER;
-    */ 
     //カメラ情報
     private Camera camera_object;
     private RaycastHit hit;
@@ -63,6 +38,18 @@ public class GameController : MonoBehaviour
 
     private GameObject Piece;
 
+    //プレイヤー
+    public Player player1;
+    public Player player2;
+    public Player currentPlayer;
+    public Player otherPlayer;
+
+    //UI
+    public Text currentPlayerText;
+    public GameObject Popup;
+    public Text WinnerText;
+    public Button quartoButton;
+
     void Awake()
     {
         instance = this;
@@ -86,6 +73,14 @@ public class GameController : MonoBehaviour
         {
             boardChildren[i] = board.transform.GetChild(i).gameObject;
         }
+
+        player1 = new Player("Player1", true);
+        player2 = new Player("Player2", false);
+        currentPlayer = player1;
+        otherPlayer = player2;
+
+        Popup.SetActive(false);
+
         Debug.Log(boardChildren);
 
         //DebugField();
@@ -94,7 +89,15 @@ public class GameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        currentPlayerText.text = currentPlayer.name + "の手番です";
+        if(currentPlayer.name == "Player1")
+        {
+            currentPlayerText.color = new Color32(255, 0, 0, 255);
+        }
+        else
+        {
+            currentPlayerText.color = new Color32(0, 0, 255, 255);
+        }
     }
 
     private void InitializeField()
@@ -323,4 +326,34 @@ public class GameController : MonoBehaviour
         }
         return false;
     }
+
+    public void CheckWinner()
+    {
+        if(DoesQuarto())
+        {
+            WinnerText.text = currentPlayer.name + "の勝ちです";
+        }
+        else
+        {
+            WinnerText.text = "お手付きで" + currentPlayer.name + "の負けです";
+        }
+        Popup.SetActive(true);
+        quartoButton.interactable = false;
+        board.GetComponent<TileSelector>().enabled = false;
+        board.GetComponent<MoveSelector>().enabled = false;
+    }
+
+    //スタート画面に戻る
+	public void BackStartMenu()
+    {
+		SceneManager.LoadScene ("StartMenu");
+	}
+
+    public void NextPlayer()
+    {
+        Player tempPlayer = currentPlayer;
+        currentPlayer = otherPlayer;
+        otherPlayer = tempPlayer;
+    }
+
 }
