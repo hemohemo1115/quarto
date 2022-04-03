@@ -4,9 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class GameController : MonoBehaviour
+public class GameControllerCpu : MonoBehaviour
 {
-    public static GameController instance;
+    public static GameControllerCpu instance;
 
     //ボードを定義
     private GameObject[,] field = new GameObject[4, 4];
@@ -36,11 +36,12 @@ public class GameController : MonoBehaviour
     public GameObject CylinderBigOcherHole;
     public GameObject CylinderBigBrownHole;
 
-    private GameObject Piece;
+    public GameObject Piece;
+    public List<GameObject> Pieces = new List<GameObject>(); 
 
     //プレイヤー
-    public Player player1;
-    public Player player2;
+    public Player player;
+    public Player cpu;
     public Player currentPlayer;
     public Player otherPlayer;
 
@@ -67,21 +68,44 @@ public class GameController : MonoBehaviour
         //Boardの子供を取得
         int childrenLength = board.transform.childCount;
         boardChildren = new GameObject[childrenLength];
-        Debug.Log(childrenLength);
+        Debug.Log("childrenLength = " + childrenLength);
         //ボードの子を順番に配列に格納
-        for (var i = 0; i < childrenLength; ++i)
+        for (int i = 0; i < childrenLength; ++i)
         {
             boardChildren[i] = board.transform.GetChild(i).gameObject;
+            Debug.Log("boardChildren = " + boardChildren[i]);
         }
-
-        player1 = new Player("Player1", true);
-        player2 = new Player("Player2", false);
-        currentPlayer = player1;
-        otherPlayer = player2;
+        //Piecesの子供を取得
+        int pieceChildrenLength = Piece.transform.childCount;
+        //Piecesの子を順番に配列に格納
+        for (int i = 0; i < pieceChildrenLength; ++i)
+        {
+            Pieces.Add(Piece.transform.GetChild(i).gameObject);
+        }
+        for(int i = 0; i < Pieces.Count; i++)
+        {
+            Debug.Log(Pieces[i]);
+        }
 
         Popup.SetActive(false);
 
-        Debug.Log(boardChildren);
+        player = new Player("Player", true);
+        cpu = new Player("CPU", false);
+        Random.InitState(System.DateTime.Now.Millisecond);
+        int teban = Random.Range(0, 2);
+        if(teban == 0)
+        {
+            currentPlayer = player;
+            otherPlayer = cpu;
+        }
+        else
+        {
+            currentPlayer = cpu;
+            otherPlayer = player;
+            board.GetComponent<TileSelector>().enabled = false;
+            Cpu.instance.CpuFirstPlay();
+        }
+
 
         //DebugField();
     }
@@ -90,13 +114,13 @@ public class GameController : MonoBehaviour
     void Update()
     {
         currentPlayerText.text = currentPlayer.name + "の手番です";
-        if(currentPlayer.name == "Player1")
+        if(currentPlayer.name == "Player")
         {
             currentPlayerText.color = new Color32(255, 0, 0, 255);
         }
         else
         {
-            currentPlayerText.color = new Color32(0, 0, 255, 255);
+            currentPlayerText.color = new Color32(0, 255, 0, 255);
         }
     }
 
@@ -127,9 +151,9 @@ public class GameController : MonoBehaviour
         board.SelectPiece(piece);
     }
 
-    public void DeselectPiece(GameObject piece)
+    public void DeselectPieceCpuMatch(GameObject piece)
     {
-        board.DeselectPiece(piece);
+        board.DeselectPieceCpuMatch(piece);
     }
 
     public bool DoesGameObjectBelongBoard(GameObject space)
@@ -351,6 +375,7 @@ public class GameController : MonoBehaviour
         }
     }
 
+
     public void Move(GameObject piece, GameObject selectedSpace)
     {
         if(DoesPieceBig(piece))
@@ -495,21 +520,6 @@ public class GameController : MonoBehaviour
         quartoButton.interactable = false;
         board.GetComponent<TileSelector>().enabled = false;
         board.GetComponent<MoveSelector>().enabled = false;
-    }
-
-    public bool DoesFullField()
-    {
-        for(int i = 0;i < 4;i++)
-        {
-            for(int j = 0;j < 4;j++)
-            {
-                if(field[i,j].tag != "Piece")
-                {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 
     //スタート画面に戻る

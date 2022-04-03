@@ -43,4 +43,17 @@ public class Board : MonoBehaviour
             renderers.material = brown;
         }
     }
+
+    public void DeselectPieceCpuMatch(GameObject piece)
+    {
+        MeshRenderer renderers = piece.GetComponentInChildren<MeshRenderer>();
+        if(GameControllerCpu.instance.DoesPieceOcher(piece))
+        {
+            renderers.material = ocher;
+        }
+        else
+        {
+            renderers.material = brown;
+        }
+    }
 }

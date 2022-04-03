@@ -22,4 +22,9 @@ public class GameStart : MonoBehaviour
     {
 		SceneManager.LoadScene ("LocalMatch");
 	}
+
+    public void StartCpuMatch()
+    {
+		SceneManager.LoadScene ("CpuMatch");
+	}
 }
