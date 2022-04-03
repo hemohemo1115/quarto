@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class TileSelector : MonoBehaviour
 {
@@ -15,7 +16,6 @@ public class TileSelector : MonoBehaviour
         Vector3 point = Geometry.PointFromGrid(gridPoint);
         tileHighlight = Instantiate(tileHighlightPrefab, point, Quaternion.identity, gameObject.transform);
         tileHighlight.SetActive(false);
-
     }
 
     // Update is called once per frame
@@ -30,22 +30,49 @@ public class TileSelector : MonoBehaviour
             //Vector2 gridPoint = Geometry.GridFromPoint(position);
             //GameObject selectedPiece = hit.collider.gameObject;
             
-            if(GameController.instance.DoesGameObjectBelongBoard(hit.collider.gameObject))
+            //ローカル対戦の処理
+            if(SceneManager.GetActiveScene().name == "LocalMatch")
             {
-                tileHighlight.SetActive(true);
-                tileHighlight.transform.position = position + new Vector3(0, 0.1f, 0);
-            }
-            if (Input.GetMouseButtonDown(0))
-            {
-                GameObject selectedPiece = hit.collider.gameObject;
-                //Debug.Log(selectedPiece);
-                if (selectedPiece.tag == "Piece" && !(GameController.instance.DoesPieceInBoard(selectedPiece)))
+                if(GameController.instance.DoesGameObjectBelongBoard(hit.collider.gameObject))
                 {
-                    GameController.instance.SelectPiece(selectedPiece);
-                    //Debug.Log("selected");
-                    // Reference Point 1: add ExitState call here later
-                    GameController.instance.NextPlayer();
-                    ExitState(selectedPiece);
+                    tileHighlight.SetActive(true);
+                    tileHighlight.transform.position = position + new Vector3(0, 0.1f, 0);
+                }
+                if (Input.GetMouseButtonDown(0))
+                {
+                    GameObject selectedPiece = hit.collider.gameObject;
+                    //Debug.Log(selectedPiece);
+                    if (selectedPiece.tag == "Piece" && !(GameController.instance.DoesPieceInBoard(selectedPiece)))
+                    {
+                        GameController.instance.SelectPiece(selectedPiece);
+                        //Debug.Log("selected");
+                        // Reference Point 1: add ExitState call here later
+                        GameController.instance.NextPlayer();
+                        ExitState(selectedPiece);
+                    }
+                }
+            }
+            else if(SceneManager.GetActiveScene().name == "CpuMatch")
+            {
+                if(GameControllerCpu.instance.DoesGameObjectBelongBoard(hit.collider.gameObject))
+                {
+                    tileHighlight.SetActive(true);
+                    tileHighlight.transform.position = position + new Vector3(0, 0.1f, 0);
+                }
+                if (Input.GetMouseButtonDown(0))
+                {
+                    GameObject selectedPiece = hit.collider.gameObject;
+                    //Debug.Log(selectedPiece);
+                    if (selectedPiece.tag == "Piece" && !(GameControllerCpu.instance.DoesPieceInBoard(selectedPiece)))
+                    {
+                        GameControllerCpu.instance.SelectPiece(selectedPiece);
+                        Cpu.instance.RemovePieceInList(selectedPiece);
+                        //Debug.Log("selected");
+                        // Reference Point 1: add ExitState call here later
+                        GameControllerCpu.instance.NextPlayer();
+                        this.enabled = false;
+                        Cpu.instance.CpuPlay(selectedPiece);
+                    }
                 }
             }
         }
