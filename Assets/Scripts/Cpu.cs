@@ -54,14 +54,19 @@ public class Cpu : MonoBehaviour
 
     public void CpuFirstPlay()
     {
-        StartCoroutine(DelayCoroutine());
+        //StartCoroutine(DelayCoroutine());
         SelectPiece();
     }
 
     public void CpuPlay(GameObject selectedPiece)
     {
-        StartCoroutine(DelayCoroutine());
+        //StartCoroutine(DelayCoroutine());
         MovePiece(selectedPiece);
+        if(GameControllerCpu.instance.DoesQuarto() || (GameControllerCpu.instance.DoesFullField() && !(GameControllerCpu.instance.DoesQuarto())))
+        {
+            GameControllerCpu.instance.CheckWinner();
+            return;
+        }
         SelectPiece();
     }
 
