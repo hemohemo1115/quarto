@@ -71,6 +71,7 @@ public class TileSelector : MonoBehaviour
                         // Reference Point 1: add ExitState call here later
                         GameControllerCpu.instance.NextPlayer();
                         this.enabled = false;
+                        tileHighlight.SetActive(false);
                         Cpu.instance.CpuPlay(selectedPiece);
                     }
                 }

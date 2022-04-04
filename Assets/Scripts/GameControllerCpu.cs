@@ -50,6 +50,7 @@ public class GameControllerCpu : MonoBehaviour
     public GameObject Popup;
     public Text WinnerText;
     public Button quartoButton;
+    public GameObject BackMenuButton2;
 
     void Awake()
     {
@@ -68,12 +69,12 @@ public class GameControllerCpu : MonoBehaviour
         //Boardの子供を取得
         int childrenLength = board.transform.childCount;
         boardChildren = new GameObject[childrenLength];
-        Debug.Log("childrenLength = " + childrenLength);
+        //Debug.Log("childrenLength = " + childrenLength);
         //ボードの子を順番に配列に格納
         for (int i = 0; i < childrenLength; ++i)
         {
             boardChildren[i] = board.transform.GetChild(i).gameObject;
-            Debug.Log("boardChildren = " + boardChildren[i]);
+            //Debug.Log("boardChildren = " + boardChildren[i]);
         }
         //Piecesの子供を取得
         int pieceChildrenLength = Piece.transform.childCount;
@@ -84,11 +85,13 @@ public class GameControllerCpu : MonoBehaviour
         }
         for(int i = 0; i < Pieces.Count; i++)
         {
-            Debug.Log(Pieces[i]);
+            //Debug.Log(Pieces[i]);
         }
 
         Popup.SetActive(false);
+        BackMenuButton2.SetActive(false);
 
+        //先攻後攻決め
         player = new Player("Player", true);
         cpu = new Player("CPU", false);
         Random.InitState(System.DateTime.Now.Millisecond);
@@ -106,8 +109,6 @@ public class GameControllerCpu : MonoBehaviour
             Cpu.instance.CpuFirstPlay();
         }
 
-
-        //DebugField();
     }
 
     // Update is called once per frame
@@ -121,6 +122,10 @@ public class GameControllerCpu : MonoBehaviour
         else
         {
             currentPlayerText.color = new Color32(0, 255, 0, 255);
+        }
+        if(DoesFullField() && !(DoesQuarto()))
+        {
+            quartoButton.transform.Find("Text").gameObject.GetComponent<Text>().text = "引き分け";
         }
     }
 
@@ -514,7 +519,14 @@ public class GameControllerCpu : MonoBehaviour
         }
         else
         {
-            WinnerText.text = "お手付きで" + currentPlayer.name + "の負けです";
+            if(DoesFullField())
+            {
+                WinnerText.text = "引き分けです";
+            }
+            else
+            {
+                WinnerText.text = "お手付きで" + currentPlayer.name + "の負けです";
+            }
         }
         Popup.SetActive(true);
         quartoButton.interactable = false;
@@ -522,11 +534,32 @@ public class GameControllerCpu : MonoBehaviour
         board.GetComponent<MoveSelector>().enabled = false;
     }
 
+    public bool DoesFullField()
+    {
+        for(int i = 0;i < 4;i++)
+        {
+            for(int j = 0;j < 4;j++)
+            {
+                if(field[i,j].tag != "Piece")
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     //スタート画面に戻る
 	public void BackStartMenu()
     {
 		SceneManager.LoadScene ("StartMenu");
 	}
+
+    public void BackGameScreen()
+    {
+        Popup.SetActive(false);
+        BackMenuButton2.SetActive(true);
+    }
 
     public void NextPlayer()
     {
